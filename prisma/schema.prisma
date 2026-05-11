@@ -17,3 +17,10 @@ model User {
   name  String
   email String  @unique
 }
+
+model DietPlan {
+  id          Int     @id @default(autoincrement())
+  goal        String
+  dietPlan    Json
+  createdAt   DateTime @default(now())
+}
