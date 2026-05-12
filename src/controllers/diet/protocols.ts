@@ -42,3 +42,17 @@ export interface IGenerateDietUseCase {
 export interface IGenerateDietRepository {
   saveDietPlan(params: IGenerateDietRepositoryParams): Promise<DietPlanEntity>;
 }
+
+export interface IGetDietPlanController {
+  getDietPlan(
+    httpRequest: HttpRequest<unknown, { id: number }>,
+  ): Promise<HttpResponse<DietPlanEntity | ValidationError[] | string>>;
+}
+
+export interface IGetDietPlanUseCase {
+  getDietPlan(id: number): Promise<DietPlanEntity | null>;
+}
+
+export interface IGetDietPlanRepository {
+  findDietPlanById(id: number): Promise<DietPlanEntity | null>;
+}
