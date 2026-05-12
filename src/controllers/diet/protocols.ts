@@ -1,3 +1,5 @@
+import { DietPlanEntity } from "../../models/DietPlan.model";
+
 export enum Goal {
   LOSE_WEIGHT = "lose_weight",
   GAIN_MUSCLE = "gain_muscle",
@@ -48,10 +50,24 @@ export interface DietPlan {
   totalCalories: number;
 }
 
+export interface IGenerateDietResponse {
+  id: number;
+  dietPlan: DietPlan;
+}
+
+export interface IGenerateDietRepositoryParams {
+  goal: Goal;
+  dietPlan: DietPlan;
+}
+
 export interface IGenerateDietController {
-  generateDiet(params: GenerateDietParams): Promise<DietPlan>;
+  generateDiet(params: GenerateDietParams): Promise<IGenerateDietResponse>;
 }
 
 export interface IGenerateDietUseCase {
-  generateDiet(params: GenerateDietParams): Promise<DietPlan>;
+  generateDiet(params: GenerateDietParams): Promise<IGenerateDietResponse>;
+}
+
+export interface IGenerateDietRepository {
+  saveDietPlan(params: IGenerateDietRepositoryParams): Promise<DietPlanEntity>;
 }
