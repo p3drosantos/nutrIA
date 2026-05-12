@@ -1,19 +1,22 @@
-import { HttpRequest, HttpResponse } from "../protocols";
+import { HttpRequest, HttpResponse, ValidationError } from "../protocols";
 import {
-  DietPlan,
-  GenerateDietParams,
   IGenerateDietController,
   IGenerateDietResponse,
   IGenerateDietUseCase,
 } from "./protocols";
 
+import {
+  GenerateDietParams,
+  generateDietSchema,
+} from "../../validators/generate-diet.schema";
+import { ZodError } from "zod";
+
 export class GenerateDietController implements IGenerateDietController {
   constructor(private readonly generateDietUseCase: IGenerateDietUseCase) {}
   async generateDiet(
     httpRequest: HttpRequest<GenerateDietParams>,
-  ): Promise<HttpResponse<IGenerateDietResponse>> {
+  ): Promise<HttpResponse<IGenerateDietResponse | ValidationError[] | string>> {
     try {
-      console.log("Received request to generate diet plan:", httpRequest.body);
       if (!httpRequest.body) {
         return {
           statusCode: 400,
@@ -21,14 +24,27 @@ export class GenerateDietController implements IGenerateDietController {
         };
       }
 
-      const response = await this.generateDietUseCase.generateDiet(
-        httpRequest.body,
-      );
+      const parsedParams = generateDietSchema.parse(httpRequest.body);
+
+      const response =
+        await this.generateDietUseCase.generateDiet(parsedParams);
       return {
         statusCode: 200,
         body: response,
       };
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((issue) => ({
+          field: issue.path[0].toString(),
+          message: issue.message,
+        }));
+
+        return {
+          statusCode: 400,
+          body: formattedErrors,
+        };
+      }
+
       return {
         statusCode: 500,
         body: "An error occurred while generating the diet plan.",

@@ -1,12 +1,11 @@
 import {
-  DietPlan,
-  GenerateDietParams,
   IGenerateDietRepository,
   IGenerateDietResponse,
   IGenerateDietUseCase,
 } from "../../controllers/diet/protocols";
 import { IAIProvider } from "../../interfaces/ai-provider";
 import { generateDietPrompt } from "../../prompts/generate-diet-prompt";
+import { GenerateDietParams } from "../../validators/generate-diet.schema";
 
 export class GenerateDietUseCase implements IGenerateDietUseCase {
   constructor(
