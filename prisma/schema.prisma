@@ -16,10 +16,15 @@ model User {
   id    Int     @id @default(autoincrement())
   name  String
   email String  @unique
+  password String
+  createdAt DateTime @default(now())
+  dietPlans DietPlan[]
 }
 
 model DietPlan {
   id          Int     @id @default(autoincrement())
+  userId      Int
+  user        User    @relation(fields: [userId], references: [id])
   goal        String
   dietPlan    Json
   createdAt   DateTime @default(now())
