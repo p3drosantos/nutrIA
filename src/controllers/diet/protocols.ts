@@ -1,4 +1,5 @@
 import { DietPlanEntity } from "../../models/DietPlan.model";
+import { HttpRequest, HttpResponse } from "../protocols";
 
 export enum Goal {
   LOSE_WEIGHT = "lose_weight",
@@ -61,7 +62,9 @@ export interface IGenerateDietRepositoryParams {
 }
 
 export interface IGenerateDietController {
-  generateDiet(params: GenerateDietParams): Promise<IGenerateDietResponse>;
+  generateDiet(
+    httpRequest: HttpRequest<GenerateDietParams>,
+  ): Promise<HttpResponse<IGenerateDietResponse>>;
 }
 
 export interface IGenerateDietUseCase {

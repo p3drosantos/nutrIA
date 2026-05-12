@@ -18,8 +18,10 @@ router.post("/generate", async (req, res) => {
       generateDietUseCase,
     );
 
-    const response = await generateDietController.generateDiet(req.body);
-    res.json(response);
+    const response = await generateDietController.generateDiet({
+      body: req.body,
+    });
+    res.status(response.statusCode).json(response.body);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to generate diet plan" });
