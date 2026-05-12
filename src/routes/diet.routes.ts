@@ -1,14 +1,19 @@
 import { Router } from "express";
 import { GeminiAdapter } from "../adapters/gemini-adapter";
-import { GenerateDietUseCase } from "../use-cases/GenerateDietUseCase";
+import { GenerateDietUseCase } from "../use-cases/diet/GenerateDietUseCase";
 import { GenerateDietController } from "../controllers/diet/GenerateDietController";
+import { GenerateDietRepository } from "../repositories/diet/GenerateDietRepository";
 
 const router = Router();
 
 router.post("/generate", async (req, res) => {
   try {
     const iaProvider = new GeminiAdapter();
-    const generateDietUseCase = new GenerateDietUseCase(iaProvider);
+    const generateDietRepository = new GenerateDietRepository();
+    const generateDietUseCase = new GenerateDietUseCase(
+      iaProvider,
+      generateDietRepository,
+    );
     const generateDietController = new GenerateDietController(
       generateDietUseCase,
     );
