@@ -3,9 +3,7 @@ import {
   IGenerateDietRepositoryParams,
 } from "../../controllers/diet/protocols";
 import { DietPlanEntity } from "../../models/DietPlan.model";
-import { Prisma, PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../lib/prisma";
 
 export class GenerateDietRepository implements IGenerateDietRepository {
   async saveDietPlan(
