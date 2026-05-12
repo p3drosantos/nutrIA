@@ -1,4 +1,4 @@
-import { GenerateDietParams } from "../controllers/diet/protocols";
+import { GenerateDietParams } from "../validators/generate-diet.schema";
 
 export function generateDietPrompt(params: GenerateDietParams) {
   return `
