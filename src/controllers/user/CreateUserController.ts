@@ -8,7 +8,7 @@ import { HttpRequest, HttpResponse, ValidationError } from "../protocols";
 import { ICreateUserController, ICreateUserUseCase } from "./protocols";
 import { UserAlreadyExistsError } from "../../errors/users/user.errors";
 
-export class CreateUSerController implements ICreateUserController {
+export class CreateUserController implements ICreateUserController {
   constructor(private createUserUseCase: ICreateUserUseCase) {}
 
   async create(

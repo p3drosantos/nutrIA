@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { prisma } from "../lib/prisma";
-import { GeminiAdapter } from "../adapters/gemini-adapter";
+import { CreateUserRepository } from "../repositories/user/CreateUserRepository";
+import { CreateUserUseCase } from "../use-cases/user/CreateUserUseCase";
+import { GetUserByEmailRepository } from "../repositories/user/GetUserByEmailRepository";
+import { CreateUserController } from "../controllers/user/CreateUserController";
 
 const router = Router();
 
@@ -9,15 +12,23 @@ router.get("/", async (req, res) => {
   return res.json(users);
 });
 
-router.post("/", async (req, res) => {
-  const { name, email } = req.body;
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-    },
-  });
-  return res.json(user);
+router.post("/register", async (req, res) => {
+  try {
+    const createUserRepository = new CreateUserRepository();
+    const getUserByEmailRepository = new GetUserByEmailRepository();
+    const createUserUseCase = new CreateUserUseCase(
+      createUserRepository,
+      getUserByEmailRepository,
+    );
+    const createUserController = new CreateUserController(createUserUseCase);
+
+    const response = await createUserController.create({
+      body: req.body,
+    });
+    res.status(response.statusCode).json(response.body);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 export default router;
