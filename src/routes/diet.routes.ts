@@ -7,6 +7,9 @@ import { GetDietByIdController } from "../controllers/diet/GetDietByIdController
 import { GetDietByIdRepository } from "../repositories/diet/GetDietByIdRepository";
 import { GetDietByIdUseCase } from "../use-cases/diet/GetDietByIdUseCase";
 import { authMiddleware } from "../middlewares/auth-middleware";
+import { GetAllDietsController } from "../controllers/diet/GetAllDietsController";
+import { GetAllDietsUseCase } from "../use-cases/diet/GetAllDietsUseCase";
+import { GetAllDietsPlansRepository } from "../repositories/diet/GetAllDietsRepository";
 
 const router = Router();
 
@@ -30,6 +33,24 @@ router.post("/generate", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to generate diet plan" });
+  }
+});
+
+router.get("/my-plans", authMiddleware, async (req, res) => {
+  try {
+    const getAllDietsPlansRepository = new GetAllDietsPlansRepository();
+    const getAllDietsUseCase = new GetAllDietsUseCase(
+      getAllDietsPlansRepository,
+    );
+    const getAllDietsController = new GetAllDietsController(getAllDietsUseCase);
+
+    const response = await getAllDietsController.getAllDietPlans({
+      userId: req.userId,
+    });
+    res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to retrieve diet plans" });
   }
 });
 
