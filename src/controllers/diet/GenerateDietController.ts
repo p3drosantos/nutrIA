@@ -24,10 +24,21 @@ export class GenerateDietController implements IGenerateDietController {
         };
       }
 
+      const userId = httpRequest.userId;
+
+      if (!userId) {
+        return {
+          statusCode: 401,
+          body: "Unauthorized",
+        };
+      }
+
       const parsedParams = generateDietSchema.parse(httpRequest.body);
 
-      const response =
-        await this.generateDietUseCase.generateDiet(parsedParams);
+      const response = await this.generateDietUseCase.generateDiet({
+        ...parsedParams,
+        userId: userId,
+      });
       return {
         statusCode: 200,
         body: response,

@@ -1,6 +1,7 @@
 import { DietPlanEntity } from "../../models/DietPlan.model";
 import { HttpRequest, HttpResponse, ValidationError } from "../protocols";
 import { GenerateDietParams } from "../../validators/generate-diet.schema";
+import { GenerateDietUseCaseInput } from "../../use-cases/diet/GenerateDietUseCase";
 
 export interface DietPlan {
   breakfast: {
@@ -27,6 +28,7 @@ export interface IGenerateDietResponse {
 export interface IGenerateDietRepositoryParams {
   goal: string;
   dietPlan: DietPlan;
+  userId: number;
 }
 
 export interface IGenerateDietController {
@@ -36,7 +38,9 @@ export interface IGenerateDietController {
 }
 
 export interface IGenerateDietUseCase {
-  generateDiet(params: GenerateDietParams): Promise<IGenerateDietResponse>;
+  generateDiet(
+    params: GenerateDietUseCaseInput,
+  ): Promise<IGenerateDietResponse>;
 }
 
 export interface IGenerateDietRepository {
@@ -50,7 +54,7 @@ export interface IGetDietPlanController {
 }
 
 export interface IGetDietPlanUseCase {
-  getDietPlan(id: number): Promise<DietPlanEntity | null>;
+  getDietPlan(id: number, userId: number): Promise<DietPlanEntity | null>;
 }
 
 export interface IGetDietPlanRepository {

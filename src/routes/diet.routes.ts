@@ -6,10 +6,11 @@ import { GenerateDietRepository } from "../repositories/diet/GenerateDietReposit
 import { GetDietByIdController } from "../controllers/diet/GetDietByIdController";
 import { GetDietByIdRepository } from "../repositories/diet/GetDietByIdRepository";
 import { GetDietByIdUseCase } from "../use-cases/diet/GetDietByIdUseCase";
+import { authMiddleware } from "../middlewares/auth-middleware";
 
 const router = Router();
 
-router.post("/generate", async (req, res) => {
+router.post("/generate", authMiddleware, async (req, res) => {
   try {
     const iaProvider = new GeminiAdapter();
     const generateDietRepository = new GenerateDietRepository();
@@ -23,6 +24,7 @@ router.post("/generate", async (req, res) => {
 
     const response = await generateDietController.generateDiet({
       body: req.body,
+      userId: req.userId,
     });
     res.status(response.statusCode).json(response.body);
   } catch (error) {

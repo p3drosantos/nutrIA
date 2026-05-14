@@ -7,21 +7,28 @@ import { IAIProvider } from "../../interfaces/ai-provider";
 import { generateDietPrompt } from "../../prompts/generate-diet-prompt";
 import { GenerateDietParams } from "../../validators/generate-diet.schema";
 
+export type GenerateDietUseCaseInput = GenerateDietParams & {
+  userId: number;
+};
+
 export class GenerateDietUseCase implements IGenerateDietUseCase {
   constructor(
     private readonly aiProvider: IAIProvider,
     private readonly generateDietRepository: IGenerateDietRepository,
   ) {}
   async generateDiet(
-    params: GenerateDietParams,
+    params: GenerateDietUseCaseInput,
   ): Promise<IGenerateDietResponse> {
     const prompt = generateDietPrompt(params);
+
+    const userId = params.userId;
 
     const aiResponse = await this.aiProvider.generate(prompt);
 
     const savedDietPlan = await this.generateDietRepository.saveDietPlan({
       goal: params.goal,
       dietPlan: aiResponse,
+      userId,
     });
 
     return { id: savedDietPlan.id, dietPlan: savedDietPlan.dietPlan };

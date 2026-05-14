@@ -14,6 +14,7 @@ export class GenerateDietRepository implements IGenerateDietRepository {
       data: {
         goal,
         dietPlan: JSON.parse(JSON.stringify(dietPlan)),
+        userId: params.userId,
       },
     });
     return createdDietPlan;
