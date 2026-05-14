@@ -33,15 +33,17 @@ router.post("/generate", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
+
     const getDietByIdUseCase = new GetDietByIdUseCase(
       new GetDietByIdRepository(),
     );
     const getDietByIdController = new GetDietByIdController(getDietByIdUseCase);
     const response = await getDietByIdController.getDietPlan({
       params: { id: Number(id) },
+      userId: req.userId,
     });
     res.status(response.statusCode).json(response.body);
   } catch (error) {

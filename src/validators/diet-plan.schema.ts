@@ -18,3 +18,5 @@ export const dietPlanSchema = z.object({
 
   totalCalories: z.number(),
 });
+
+export type DietPlan = z.infer<typeof dietPlanSchema>;
