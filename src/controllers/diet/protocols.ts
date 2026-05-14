@@ -2,6 +2,7 @@ import { DietPlanEntity } from "../../models/DietPlan.model";
 import { HttpRequest, HttpResponse, ValidationError } from "../protocols";
 import { GenerateDietParams } from "../../validators/generate-diet.schema";
 import { GenerateDietUseCaseInput } from "../../use-cases/diet/GenerateDietUseCase";
+import { User } from "../../models/User.model";
 
 export interface DietPlan {
   breakfast: {
@@ -60,3 +61,21 @@ export interface IGetDietPlanUseCase {
 export interface IGetDietPlanRepository {
   findDietPlanById(id: number): Promise<DietPlanEntity | null>;
 }
+
+export interface IGetAllDietsPlansController {
+  getAllDietPlans(
+    httpRequest: HttpRequest<unknown, unknown>,
+  ): Promise<HttpResponse<DietPlanEntity[] | ValidationError[] | string>>;
+}
+
+export interface IGetAllDietsPlansUseCase {
+  getAllDietPlans(userId: number): Promise<DietPlanEntity[]>;
+}
+
+export interface IGetAllDietsPlansRepository {
+  getAllDietPlans(userId: number): Promise<DietPlanEntity[]>;
+}
+
+// export interface IGetUserByIdRepository {
+//   getUserById(id: number): Promise<User | null>;
+// }
