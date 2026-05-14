@@ -1,9 +1,9 @@
-// import { DietPlan } from "../validators/diet-plan.schema";
+import { DietPlan } from "../validators/diet-plan.schema";
 
 export interface DietPlanEntity {
   id: number;
   goal: string;
-  dietPlan: any;
+  dietPlan: DietPlan;
   createdAt: Date;
   userId: number;
 }

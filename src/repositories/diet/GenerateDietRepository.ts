@@ -4,6 +4,7 @@ import {
 } from "../../controllers/diet/protocols";
 import { DietPlanEntity } from "../../models/DietPlan.model";
 import { prisma } from "../../lib/prisma";
+import { DietPlan } from "../../validators/diet-plan.schema";
 
 export class GenerateDietRepository implements IGenerateDietRepository {
   async saveDietPlan(
@@ -17,6 +18,9 @@ export class GenerateDietRepository implements IGenerateDietRepository {
         userId: params.userId,
       },
     });
-    return createdDietPlan;
+    return {
+      ...createdDietPlan,
+      dietPlan: createdDietPlan.dietPlan as DietPlan,
+    };
   }
 }
