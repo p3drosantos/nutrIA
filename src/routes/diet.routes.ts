@@ -10,6 +10,9 @@ import { authMiddleware } from "../middlewares/auth-middleware";
 import { GetAllDietsController } from "../controllers/diet/GetAllDietsController";
 import { GetAllDietsUseCase } from "../use-cases/diet/GetAllDietsUseCase";
 import { GetAllDietsPlansRepository } from "../repositories/diet/GetAllDietsRepository";
+import { DeleteDietController } from "../controllers/diet/DeleteDietController";
+import { DeleteDietUseCase } from "../use-cases/diet/DeleteDietUseCase";
+import { DeleteDietRepository } from "../repositories/diet/DeleteDietRepository";
 
 const router = Router();
 
@@ -70,6 +73,25 @@ router.get("/:id", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to retrieve diet plan" });
+  }
+});
+
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteDietUseCase = new DeleteDietUseCase(
+      new DeleteDietRepository(),
+      new GetDietByIdRepository(),
+    );
+    const deleteDietController = new DeleteDietController(deleteDietUseCase);
+    const response = await deleteDietController.deleteDietPlan({
+      params: { id: Number(id) },
+      userId: req.userId,
+    });
+    res.status(response.statusCode).json(response.body);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete diet plan" });
   }
 });
 
