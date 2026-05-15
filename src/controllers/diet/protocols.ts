@@ -79,3 +79,17 @@ export interface IGetAllDietsPlansRepository {
 export interface IGetUserByIdRepository {
   getUserById(id: number): Promise<User | null>;
 }
+
+export interface IDeleteDietPlanController {
+  deleteDietPlan(
+    httpRequest: HttpRequest<unknown, { id: number }>,
+  ): Promise<HttpResponse<string | ValidationError[]>>;
+}
+
+export interface IDeleteDietPlanUseCase {
+  deleteDietPlan(id: number, userId: number): Promise<void>;
+}
+
+export interface IDeleteDietPlanRepository {
+  deleteDietPlan(id: number): Promise<void>;
+}
