@@ -1,7 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
 import { IAIProvider } from "../interfaces/ai-provider";
-import { DietPlan } from "../controllers/diet/protocols";
-import { dietPlanSchema } from "../validators/diet-plan.schema";
 
 export class GeminiAdapter implements IAIProvider {
   private client: GoogleGenAI;
@@ -10,7 +8,7 @@ export class GeminiAdapter implements IAIProvider {
     this.client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
   }
 
-  async generate(prompt: string): Promise<DietPlan> {
+  async generate<T>(prompt: string): Promise<T> {
     const response = await this.client.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
@@ -21,10 +19,8 @@ export class GeminiAdapter implements IAIProvider {
     }
 
     try {
-      const dietPlan: DietPlan = JSON.parse(response.text);
-      const validateDietPlan = dietPlanSchema.parse(dietPlan);
-
-      return validateDietPlan;
+      const parsed = JSON.parse(response.text);
+      return parsed as T;
     } catch (error) {
       console.error("Failed to parse Gemini response:", error);
       throw new Error("Invalid response format from Gemini");
