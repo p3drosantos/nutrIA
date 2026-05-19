@@ -1,10 +1,12 @@
 import {
+  DietPlan,
   IGenerateDietRepository,
   IGenerateDietResponse,
   IGenerateDietUseCase,
 } from "../../controllers/diet/protocols";
 import { IAIProvider } from "../../interfaces/ai-provider";
 import { generateDietPrompt } from "../../prompts/generate-diet-prompt";
+import { dietPlanSchema } from "../../validators/diet-plan.schema";
 import { GenerateDietParams } from "../../validators/generate-diet.schema";
 
 export type GenerateDietUseCaseInput = GenerateDietParams & {
@@ -23,11 +25,13 @@ export class GenerateDietUseCase implements IGenerateDietUseCase {
 
     const userId = params.userId;
 
-    const aiResponse = await this.aiProvider.generate(prompt);
+    const aiResponse = await this.aiProvider.generate<DietPlan>(prompt);
+
+    const validatedDietPlan = dietPlanSchema.parse(aiResponse);
 
     const savedDietPlan = await this.generateDietRepository.saveDietPlan({
       goal: params.goal,
-      dietPlan: aiResponse,
+      dietPlan: validatedDietPlan,
       userId,
     });
 

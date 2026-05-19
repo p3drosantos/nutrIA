@@ -45,8 +45,24 @@ export class GenerateDietController implements IGenerateDietController {
       };
     } catch (error) {
       if (error instanceof ZodError) {
+        const isAIValidationError = error.issues.some(
+          (issue) =>
+            issue.path.includes("totalCalories") ||
+            issue.path.includes("breakfast") ||
+            issue.path.includes("lunch") ||
+            issue.path.includes("dinner"),
+        );
+
+        if (isAIValidationError) {
+          console.error(error.issues);
+          return {
+            statusCode: 502,
+            body: "A inteligência artificial gerou uma resposta fora do padrão esperado. Por favor, tente novamente.",
+          };
+        }
+
         const formattedErrors = error.issues.map((issue) => ({
-          field: issue.path[0].toString(),
+          field: issue.path.join("."),
           message: issue.message,
         }));
 
@@ -56,6 +72,7 @@ export class GenerateDietController implements IGenerateDietController {
         };
       }
 
+      console.error("❌ Erro interno no servidor:", error);
       return {
         statusCode: 500,
         body: "An error occurred while generating the diet plan.",
