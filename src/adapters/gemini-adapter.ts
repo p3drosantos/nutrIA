@@ -21,17 +21,11 @@ export class GeminiAdapter implements IAIProvider {
       };
     }
 
-    console.log("=== ENVIANDO PARA O GEMINI ===");
-    console.log(JSON.stringify(options, null, 2));
-
     const response = await this.client.models.generateContent(options);
 
     if (!response.text) {
       throw new Error("No response from Gemini");
     }
-
-    console.log("=== RESPOSTA BRUTA DA IA ===");
-    console.log(response.text);
 
     try {
       const parsed = JSON.parse(response.text);

@@ -16,10 +16,11 @@ import { DeleteDietRepository } from "../repositories/diet/DeleteDietRepository"
 import { UpdateDietUseCase } from "../use-cases/diet/UpdateDietUseCase";
 import { UpdateDietRepository } from "../repositories/diet/UpdateDietRepository";
 import { UpdateDietController } from "../controllers/diet/UpdateDietController";
+import { aiRateLimiter } from "../middlewares/limiter-middleware";
 
 const router = Router();
 
-router.post("/generate", authMiddleware, async (req, res) => {
+router.post("/generate", authMiddleware, aiRateLimiter, async (req, res) => {
   try {
     const iaProvider = new GeminiAdapter();
     const generateDietRepository = new GenerateDietRepository();
@@ -98,7 +99,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-router.patch("/:id", authMiddleware, async (req, res) => {
+router.patch("/:id", authMiddleware, aiRateLimiter, async (req, res) => {
   try {
     const { id } = req.params;
     const updateDietRepository = new UpdateDietRepository();
