@@ -3,6 +3,7 @@ import { HttpRequest, HttpResponse, ValidationError } from "../protocols";
 import { GenerateDietParams } from "../../validators/generate-diet.schema";
 import { GenerateDietUseCaseInput } from "../../use-cases/diet/GenerateDietUseCase";
 import { User } from "../../models/User.model";
+import { UpdateDietParams } from "../../validators/update-diet-schema";
 
 export interface DietPlan {
   breakfast: {
@@ -92,4 +93,33 @@ export interface IDeleteDietPlanUseCase {
 
 export interface IDeleteDietPlanRepository {
   deleteDietPlan(id: number): Promise<void>;
+}
+export interface UpdateDietPlanUseCaseInput {
+  dietId: number;
+  userId: number;
+  userRequest: string;
+}
+
+export interface UpdateDietUseCaseResponse {
+  success: boolean;
+  message: string;
+  dietPlan: DietPlan;
+}
+
+export interface IUpdateDietPlanRepository {
+  updateDiet(id: number, newDietPlan: DietPlan): Promise<void>;
+}
+
+export interface IUpdateDietPlanUseCase {
+  updateDiet(
+    params: UpdateDietPlanUseCaseInput,
+  ): Promise<UpdateDietUseCaseResponse>;
+}
+
+export interface IUpdateDietPlanController {
+  updateDiet(
+    httpRequest: HttpRequest<UpdateDietParams>,
+  ): Promise<
+    HttpResponse<UpdateDietUseCaseResponse | ValidationError[] | string>
+  >;
 }

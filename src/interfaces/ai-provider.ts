@@ -1,3 +1,3 @@
 export interface IAIProvider {
-  generate<T>(prompt: string): Promise<T>;
+  generate<T>(prompt: string, responseSchema?: any): Promise<T>;
 }
