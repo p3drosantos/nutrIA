@@ -13,6 +13,9 @@ import { GetAllDietsPlansRepository } from "../repositories/diet/GetAllDietsRepo
 import { DeleteDietController } from "../controllers/diet/DeleteDietController";
 import { DeleteDietUseCase } from "../use-cases/diet/DeleteDietUseCase";
 import { DeleteDietRepository } from "../repositories/diet/DeleteDietRepository";
+import { UpdateDietUseCase } from "../use-cases/diet/UpdateDietUseCase";
+import { UpdateDietRepository } from "../repositories/diet/UpdateDietRepository";
+import { UpdateDietController } from "../controllers/diet/UpdateDietController";
 
 const router = Router();
 
@@ -86,6 +89,32 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     const deleteDietController = new DeleteDietController(deleteDietUseCase);
     const response = await deleteDietController.deleteDietPlan({
       params: { id: Number(id) },
+      userId: req.userId,
+    });
+    res.status(response.statusCode).json(response.body);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete diet plan" });
+  }
+});
+
+router.patch("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateDietRepository = new UpdateDietRepository();
+    const getDietByIdRepository = new GetDietByIdRepository();
+    const iaProvider = new GeminiAdapter();
+
+    const updateDietUseCase = new UpdateDietUseCase(
+      updateDietRepository,
+      getDietByIdRepository,
+      iaProvider,
+    );
+
+    const updateDietController = new UpdateDietController(updateDietUseCase);
+    const response = await updateDietController.updateDiet({
+      params: { id: Number(id) },
+      body: req.body,
       userId: req.userId,
     });
     res.status(response.statusCode).json(response.body);

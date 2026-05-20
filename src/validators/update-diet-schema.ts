@@ -12,8 +12,7 @@ export type UpdateDietResponse = z.infer<typeof updateDietResponseSchema>;
 
 // Valida o req.body do Express
 export const updateDietBodySchema = z.object({
-  dietId: z.number(),
-  userRequest: z.string(),
+  userRequest: z.string().min(5, "User request is required"),
 });
 
 export type UpdateDietParams = z.infer<typeof updateDietBodySchema>;
