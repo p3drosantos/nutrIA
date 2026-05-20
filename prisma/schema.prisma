@@ -19,6 +19,7 @@ model User {
   password String
   createdAt DateTime @default(now())
   dietPlans DietPlan[]
+  aiRequestLog AiRequestLog[]
 }
 
 model DietPlan {
@@ -28,4 +29,14 @@ model DietPlan {
   goal        String
   dietPlan    Json
   createdAt   DateTime @default(now())
+}
+
+model AiRequestLog {
+  id        String   @id @default(uuid())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String   
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
