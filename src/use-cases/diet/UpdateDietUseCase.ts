@@ -31,7 +31,7 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
 
     const aiRequestCount = await this.aiRequestLog.countAIRequests(userId);
 
-    if (aiRequestCount >= 2) {
+    if (aiRequestCount >= 4) {
       throw new AiRequestLimitExceededError();
     }
 
@@ -56,46 +56,86 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
           wasAltered: {
             type: "BOOLEAN",
             description:
-              "True se o pedido fez sentido e a dieta foi alterada. False se recusado.",
+              "True se o pedido fez sentido e a dieta foi alterada. False se recusado ou impossível.",
           },
           systemNotes: {
             type: "STRING",
             description:
-              "Mensagem explicando o motivo da alteração ou da recusa.",
+              "Mensagem detalhada explicando o motivo da alteração ou o porquê da recusa.",
           },
           dietUpdated: {
             type: "OBJECT",
             description:
-              "Objeto contendo TODAS as refeições da dieta (alteradas e não alteradas). Não omita nenhuma.",
-            // DETALHAMOS AS PROPRIEDADES DA DIETA AQUI:
-            properties: {
-              breakfast: {
-                type: "OBJECT",
-                properties: {
-                  foods: { type: "ARRAY", items: { type: "STRING" } },
-                  calories: { type: "INTEGER" },
+              "Objeto contendo TODAS as refeições de TODOS os 7 dias da semana (as alteradas e as mantidas). Não remova nenhuma.",
+            // Injetamos dinamicamente as regras das refeições e ingredientes para os 7 dias aqui
+            properties: [
+              "segunda",
+              "terca",
+              "quarta",
+              "quinta",
+              "sexta",
+              "sabado",
+              "domingo",
+            ].reduce((acc, dia) => {
+              acc[dia] = {
+                type: "ARRAY",
+                items: {
+                  type: "OBJECT",
+                  properties: {
+                    time: {
+                      type: "STRING",
+                      description: "Horário da refeição, ex: 08:00",
+                    },
+                    mealName: {
+                      type: "STRING",
+                      description: "Ex: Café da manhã, Almoço, Lanche",
+                    },
+                    calories: {
+                      type: "NUMBER",
+                      description: "Calorias calculadas",
+                    },
+                    ingredients: {
+                      type: "ARRAY",
+                      items: {
+                        type: "OBJECT",
+                        properties: {
+                          name: {
+                            type: "STRING",
+                            description: "Apenas o nome puro do alimento.",
+                          },
+                          amount: {
+                            type: "NUMBER",
+                            description: "Apenas a quantidade numérica",
+                          },
+                          unit: {
+                            type: "STRING",
+                            enum: [
+                              "g",
+                              "ml",
+                              "unidade",
+                              "colher_sopa",
+                              "xicara",
+                            ],
+                          },
+                        },
+                        required: ["name", "amount", "unit"],
+                      },
+                    },
+                  },
+                  required: ["time", "mealName", "ingredients", "calories"],
                 },
-                required: ["foods", "calories"],
-              },
-              lunch: {
-                type: "OBJECT",
-                properties: {
-                  foods: { type: "ARRAY", items: { type: "STRING" } },
-                  calories: { type: "INTEGER" },
-                },
-                required: ["foods", "calories"],
-              },
-              dinner: {
-                type: "OBJECT",
-                properties: {
-                  foods: { type: "ARRAY", items: { type: "STRING" } },
-                  calories: { type: "INTEGER" },
-                },
-                required: ["foods", "calories"],
-              },
-              totalCalories: { type: "INTEGER" },
-            },
-            required: ["breakfast", "lunch", "dinner", "totalCalories"],
+              };
+              return acc;
+            }, {} as any),
+            required: [
+              "segunda",
+              "terca",
+              "quarta",
+              "quinta",
+              "sexta",
+              "sabado",
+              "domingo",
+            ],
           },
         },
         required: ["wasAltered", "systemNotes", "dietUpdated"],
