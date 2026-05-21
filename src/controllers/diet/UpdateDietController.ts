@@ -1,3 +1,4 @@
+import { AiRequestLimitExceededError } from "../../errors/ai/ai.errors";
 import { DietNotFoundError } from "../../errors/diet/diet-errors";
 import { ForbiddenError } from "../../errors/users/user.errors";
 import {
@@ -107,6 +108,13 @@ export class UpdateDietController implements IUpdateDietPlanController {
         return {
           statusCode: 404,
           body: "Diet plan not found.",
+        };
+      }
+
+      if (error instanceof AiRequestLimitExceededError) {
+        return {
+          statusCode: 429,
+          body: "AI request limit exceeded. Please try again later.",
         };
       }
 

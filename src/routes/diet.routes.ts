@@ -106,6 +106,7 @@ router.patch("/:id", authMiddleware, aiRateLimiter, async (req, res) => {
   try {
     const { id } = req.params;
     const updateDietRepository = new UpdateDietRepository();
+    const aiRequestLog = new AiRequestLogRepository();
     const getDietByIdRepository = new GetDietByIdRepository();
     const iaProvider = new GeminiAdapter();
 
@@ -113,6 +114,7 @@ router.patch("/:id", authMiddleware, aiRateLimiter, async (req, res) => {
       updateDietRepository,
       getDietByIdRepository,
       iaProvider,
+      aiRequestLog,
     );
 
     const updateDietController = new UpdateDietController(updateDietUseCase);

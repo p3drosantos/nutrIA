@@ -1,3 +1,4 @@
+import { IAIRequestLogRepository } from "../../controllers/ai-request-log/protocols";
 import {
   IGetDietPlanRepository,
   IUpdateDietPlanRepository,
@@ -5,6 +6,7 @@ import {
   UpdateDietPlanUseCaseInput,
   UpdateDietUseCaseResponse,
 } from "../../controllers/diet/protocols";
+import { AiRequestLimitExceededError } from "../../errors/ai/ai.errors";
 import { DietNotFoundError } from "../../errors/diet/diet-errors";
 import { ForbiddenError } from "../../errors/users/user.errors";
 import { IAIProvider } from "../../interfaces/ai-provider";
@@ -19,12 +21,19 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
     private readonly updateDietPlanRepository: IUpdateDietPlanRepository,
     private readonly getDietByIdRepository: IGetDietPlanRepository,
     private readonly aiProvider: IAIProvider,
+    private readonly aiRequestLog: IAIRequestLogRepository,
   ) {}
 
   async updateDiet(
     params: UpdateDietPlanUseCaseInput,
   ): Promise<UpdateDietUseCaseResponse> {
     const { dietId, userId, userRequest } = params;
+
+    const aiRequestCount = await this.aiRequestLog.countAIRequests(userId);
+
+    if (aiRequestCount >= 2) {
+      throw new AiRequestLimitExceededError();
+    }
 
     const existingDiet =
       await this.getDietByIdRepository.findDietPlanById(dietId);
@@ -100,6 +109,8 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
         dietId,
         validatedDietPlan.dietUpdated,
       );
+
+      await this.aiRequestLog.createAIRequestLog(userId, "UPDATE");
 
       return {
         success: true,
