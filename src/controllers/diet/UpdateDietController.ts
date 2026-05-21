@@ -1,3 +1,5 @@
+import { DietNotFoundError } from "../../errors/diet/diet-errors";
+import { ForbiddenError } from "../../errors/users/user.errors";
 import {
   updateDietBodySchema,
   UpdateDietParams,
@@ -94,13 +96,18 @@ export class UpdateDietController implements IUpdateDietPlanController {
         };
       }
 
-      if (error instanceof Error) {
-        if (error.message.includes("not found")) {
-          return { statusCode: 404, body: error.message };
-        }
-        if (error.message.includes("Unauthorized")) {
-          return { statusCode: 403, body: error.message };
-        }
+      if (error instanceof ForbiddenError) {
+        return {
+          statusCode: 403,
+          body: "You do not have permission to update this diet plan.",
+        };
+      }
+
+      if (error instanceof DietNotFoundError) {
+        return {
+          statusCode: 404,
+          body: "Diet plan not found.",
+        };
       }
 
       console.error("❌ Erro interno no servidor durante o update:", error);

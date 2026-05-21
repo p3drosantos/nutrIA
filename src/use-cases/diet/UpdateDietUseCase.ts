@@ -5,6 +5,8 @@ import {
   UpdateDietPlanUseCaseInput,
   UpdateDietUseCaseResponse,
 } from "../../controllers/diet/protocols";
+import { DietNotFoundError } from "../../errors/diet/diet-errors";
+import { ForbiddenError } from "../../errors/users/user.errors";
 import { IAIProvider } from "../../interfaces/ai-provider";
 import { updateDietPrompt } from "../../prompts/update-diet-prompt";
 import {
@@ -28,11 +30,11 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
       await this.getDietByIdRepository.findDietPlanById(dietId);
 
     if (!existingDiet) {
-      throw new Error("Diet plan not found");
+      throw new DietNotFoundError();
     }
 
     if (existingDiet.userId !== userId) {
-      throw new Error("Unauthorized");
+      throw new ForbiddenError();
     }
 
     const prompt = updateDietPrompt(existingDiet.dietPlan, userRequest);
