@@ -17,16 +17,19 @@ import { UpdateDietUseCase } from "../use-cases/diet/UpdateDietUseCase";
 import { UpdateDietRepository } from "../repositories/diet/UpdateDietRepository";
 import { UpdateDietController } from "../controllers/diet/UpdateDietController";
 import { aiRateLimiter } from "../middlewares/limiter-middleware";
+import { AiRequestLogRepository } from "../repositories/ai-request-log/AiRequestLogRepository";
 
 const router = Router();
 
 router.post("/generate", authMiddleware, aiRateLimiter, async (req, res) => {
   try {
     const iaProvider = new GeminiAdapter();
+    const aiRequestLogRepository = new AiRequestLogRepository();
     const generateDietRepository = new GenerateDietRepository();
     const generateDietUseCase = new GenerateDietUseCase(
       iaProvider,
       generateDietRepository,
+      aiRequestLogRepository,
     );
     const generateDietController = new GenerateDietController(
       generateDietUseCase,

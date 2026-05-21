@@ -5,7 +5,7 @@ import {
 
 import { prisma } from "../../lib/prisma";
 
-export class CreateAiRequestLogRepository implements IAIRequestLogRepository {
+export class AiRequestLogRepository implements IAIRequestLogRepository {
   async countAIRequests(userId: number): Promise<number> {
     const dayStart = new Date();
     dayStart.setHours(0, 0, 0, 0);

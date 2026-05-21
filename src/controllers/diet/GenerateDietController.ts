@@ -10,6 +10,7 @@ import {
   generateDietSchema,
 } from "../../validators/generate-diet.schema";
 import { ZodError } from "zod";
+import { AiRequestLimitExceededError } from "../../errors/ai/ai.errors";
 
 export class GenerateDietController implements IGenerateDietController {
   constructor(private readonly generateDietUseCase: IGenerateDietUseCase) {}
@@ -44,6 +45,13 @@ export class GenerateDietController implements IGenerateDietController {
         body: response,
       };
     } catch (error) {
+      if (error instanceof AiRequestLimitExceededError) {
+        return {
+          statusCode: 429,
+          body: error.message,
+        };
+      }
+
       if (error instanceof ZodError) {
         const isAIValidationError = error.issues.some(
           (issue) =>
