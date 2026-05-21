@@ -4,23 +4,10 @@ import { GenerateDietParams } from "../../validators/generate-diet.schema";
 import { GenerateDietUseCaseInput } from "../../use-cases/diet/GenerateDietUseCase";
 import { User } from "../../models/User.model";
 import { UpdateDietParams } from "../../validators/update-diet-schema";
+import { dietPlanSchema } from "../../validators/diet-plan.schema";
+import z from "zod";
 
-export interface DietPlan {
-  breakfast: {
-    foods: string[];
-    calories: number;
-  };
-  lunch: {
-    foods: string[];
-    calories: number;
-  };
-  dinner: {
-    foods: string[];
-    calories: number;
-  };
-
-  totalCalories: number;
-}
+export type DietPlan = z.infer<typeof dietPlanSchema>;
 
 export interface IGenerateDietResponse {
   id: number;
