@@ -11,3 +11,10 @@ export class ForbiddenError extends Error {
     this.name = "ForbiddenError";
   }
 }
+
+export class UserNotFoundError extends Error {
+  constructor() {
+    super("User not found");
+    this.name = "UserNotFoundError";
+  }
+}

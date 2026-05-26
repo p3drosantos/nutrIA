@@ -8,6 +8,7 @@ export type LoginResponse = {
   user: Omit<User, "password">;
 };
 
+export type RefreshTokenResponse = { accessToken: string };
 export interface ILoginController {
   login(
     httpRequest: HttpRequest<LoginInput>,
@@ -16,4 +17,16 @@ export interface ILoginController {
 
 export interface ILoginUseCase {
   login(params: LoginInput): Promise<LoginResponse>;
+}
+
+export interface IRefreshTokenUseCase {
+  refreshToken(refreshToken: string): Promise<RefreshTokenResponse>;
+}
+
+export interface IRefreshTokenController {
+  refreshToken(
+    httpRequest: HttpRequest<{ refreshToken: string }>,
+  ): Promise<
+    HttpResponse<RefreshTokenResponse | ValidationError | { message: string }>
+  >;
 }
