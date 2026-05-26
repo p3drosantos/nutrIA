@@ -64,10 +64,6 @@ export interface IGetAllDietsPlansRepository {
   getAllDietPlans(userId: number): Promise<DietPlanEntity[]>;
 }
 
-export interface IGetUserByIdRepository {
-  getUserById(id: number): Promise<User | null>;
-}
-
 export interface IDeleteDietPlanController {
   deleteDietPlan(
     httpRequest: HttpRequest<unknown, { id: number }>,
