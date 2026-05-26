@@ -4,6 +4,7 @@ import { HttpRequest, HttpResponse, ValidationError } from "../protocols";
 
 export type LoginResponse = {
   accessToken: string;
+  refreshToken: string;
   user: Omit<User, "password">;
 };
 

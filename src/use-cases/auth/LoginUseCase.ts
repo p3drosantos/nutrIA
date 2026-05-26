@@ -29,8 +29,17 @@ export class LoginUseCase implements ILoginUseCase {
       expiresIn: "1h",
     });
 
+    const refreshToken = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_REFRESH_SECRET!,
+      {
+        expiresIn: "7d",
+      },
+    );
+
     return {
       accessToken,
+      refreshToken,
       user: {
         id: user.id,
         name: user.name,
