@@ -21,3 +21,19 @@ export interface ICreateUserController {
 export interface IGetUserByEmailRepository {
   getByEmail: (email: string) => Promise<User | null>;
 }
+
+export interface IGetUserByIdRepository {
+  getUserById(id: number): Promise<Omit<User, "password"> | null>;
+}
+
+export interface IGetUserByIdUseCase {
+  getUserById(id: number): Promise<Omit<User, "password"> | null>;
+}
+
+export interface IGetUserByIdController {
+  getUserById: (
+    httpRequest: HttpRequest,
+  ) => Promise<
+    HttpResponse<Omit<User, "password"> | ValidationError[] | string>
+  >;
+}
