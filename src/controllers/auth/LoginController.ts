@@ -8,7 +8,11 @@ export class LoginController implements ILoginController {
 
   async login(
     httpRequest: HttpRequest<LoginInput>,
-  ): Promise<HttpResponse<LoginResponse | ValidationError | string>> {
+  ): Promise<
+    HttpResponse<
+      LoginResponse | ValidationError | { error: string; message: string }
+    >
+  > {
     try {
       const validationResult = loginSchema.parse(httpRequest.body);
 
@@ -22,7 +26,10 @@ export class LoginController implements ILoginController {
       if (error instanceof InvalidCredentialsError) {
         return {
           statusCode: 401,
-          body: error.message,
+          body: {
+            error: error.name,
+            message: error.message,
+          },
         };
       }
       if (error instanceof Error) {

@@ -12,7 +12,11 @@ export type RefreshTokenResponse = { accessToken: string };
 export interface ILoginController {
   login(
     httpRequest: HttpRequest<LoginInput>,
-  ): Promise<HttpResponse<LoginResponse | ValidationError | string>>;
+  ): Promise<
+    HttpResponse<
+      LoginResponse | ValidationError | { error: string; message: string }
+    >
+  >;
 }
 
 export interface ILoginUseCase {
