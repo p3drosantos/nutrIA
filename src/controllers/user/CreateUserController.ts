@@ -14,7 +14,11 @@ export class CreateUserController implements ICreateUserController {
   async create(
     httpRequest: HttpRequest<CreateUserInput>,
   ): Promise<
-    HttpResponse<Omit<User, "password"> | string | ValidationError[]>
+    HttpResponse<
+      | Omit<User, "password">
+      | { error: string; message: string }
+      | ValidationError[]
+    >
   > {
     try {
       const parsedBody = createUserSchema.parse(httpRequest.body);
@@ -47,14 +51,20 @@ export class CreateUserController implements ICreateUserController {
       if (error instanceof UserAlreadyExistsError) {
         return {
           statusCode: 409,
-          body: error.message,
+          body: {
+            error: error.name,
+            message: error.message,
+          },
         };
       }
 
       console.error(error);
       return {
         statusCode: 500,
-        body: "Failed to create user",
+        body: {
+          error: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred",
+        },
       };
     }
   }

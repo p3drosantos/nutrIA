@@ -35,13 +35,16 @@ export class LoginController implements ILoginController {
       if (error instanceof Error) {
         return {
           statusCode: 400,
-          body: "Internal server error",
+          body: {
+            error: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error",
+          },
         };
       }
 
       return {
         statusCode: 400,
-        body: "Internal server error",
+        body: { error: "UNKNOWN_ERROR", message: "An unknown error occurred" },
       };
     }
   }

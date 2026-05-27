@@ -14,7 +14,11 @@ export interface ICreateUserController {
   create: (
     httpRequest: HttpRequest<CreateUserInput>,
   ) => Promise<
-    HttpResponse<Omit<User, "password"> | ValidationError[] | string>
+    HttpResponse<
+      | Omit<User, "password">
+      | ValidationError[]
+      | { error: string; message: string }
+    >
   >;
 }
 
