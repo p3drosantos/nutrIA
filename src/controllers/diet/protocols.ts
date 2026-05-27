@@ -23,7 +23,13 @@ export interface IGenerateDietRepositoryParams {
 export interface IGenerateDietController {
   generateDiet(
     httpRequest: HttpRequest<GenerateDietParams>,
-  ): Promise<HttpResponse<IGenerateDietResponse | ValidationError[] | string>>;
+  ): Promise<
+    HttpResponse<
+      | IGenerateDietResponse
+      | ValidationError[]
+      | { error: string; message: string }
+    >
+  >;
 }
 
 export interface IGenerateDietUseCase {

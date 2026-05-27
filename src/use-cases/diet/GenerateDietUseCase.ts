@@ -5,7 +5,7 @@ import {
   IGenerateDietResponse,
   IGenerateDietUseCase,
 } from "../../controllers/diet/protocols";
-import { AiRequestLimitExceededError } from "../../errors/ai/ai.errors";
+import { AiGenerationRequestLimitExceededError } from "../../errors/ai/ai.errors";
 import { IAIProvider } from "../../interfaces/ai-provider";
 import { generateDietPrompt } from "../../prompts/generate-diet-prompt";
 import { dietPlanSchema } from "../../validators/diet-plan.schema";
@@ -28,8 +28,8 @@ export class GenerateDietUseCase implements IGenerateDietUseCase {
 
     const aiRequestCount = await this.aiRequestLog.countAIRequests(userId);
 
-    if (aiRequestCount >= 3) {
-      throw new AiRequestLimitExceededError();
+    if (aiRequestCount >= 0) {
+      throw new AiGenerationRequestLimitExceededError();
     }
 
     const prompt = generateDietPrompt(params);

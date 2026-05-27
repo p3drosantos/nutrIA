@@ -6,7 +6,7 @@ import {
   UpdateDietPlanUseCaseInput,
   UpdateDietUseCaseResponse,
 } from "../../controllers/diet/protocols";
-import { AiRequestLimitExceededError } from "../../errors/ai/ai.errors";
+import { AiUpdateRequestLimitExceededError } from "../../errors/ai/ai.errors";
 import { DietNotFoundError } from "../../errors/diet/diet-errors";
 import { ForbiddenError } from "../../errors/users/user.errors";
 import { IAIProvider } from "../../interfaces/ai-provider";
@@ -32,7 +32,7 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
     const aiRequestCount = await this.aiRequestLog.countAIRequests(userId);
 
     if (aiRequestCount >= 4) {
-      throw new AiRequestLimitExceededError();
+      throw new AiUpdateRequestLimitExceededError();
     }
 
     const existingDiet =

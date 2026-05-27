@@ -10,18 +10,27 @@ import {
   generateDietSchema,
 } from "../../validators/generate-diet.schema";
 import { ZodError } from "zod";
-import { AiRequestLimitExceededError } from "../../errors/ai/ai.errors";
+import { AiGenerationRequestLimitExceededError } from "../../errors/ai/ai.errors";
 
 export class GenerateDietController implements IGenerateDietController {
   constructor(private readonly generateDietUseCase: IGenerateDietUseCase) {}
   async generateDiet(
     httpRequest: HttpRequest<GenerateDietParams>,
-  ): Promise<HttpResponse<IGenerateDietResponse | ValidationError[] | string>> {
+  ): Promise<
+    HttpResponse<
+      | IGenerateDietResponse
+      | ValidationError[]
+      | { error: string; message: string }
+    >
+  > {
     try {
       if (!httpRequest.body) {
         return {
           statusCode: 400,
-          body: "Missing request body.",
+          body: {
+            error: "MISSING_REQUEST_BODY_ERROR",
+            message: "Request body is required.",
+          },
         };
       }
 
@@ -30,7 +39,10 @@ export class GenerateDietController implements IGenerateDietController {
       if (!userId) {
         return {
           statusCode: 401,
-          body: "Unauthorized",
+          body: {
+            error: "UNAUTHORIZED_ERROR",
+            message: "Unauthorized",
+          },
         };
       }
 
@@ -45,10 +57,13 @@ export class GenerateDietController implements IGenerateDietController {
         body: response,
       };
     } catch (error) {
-      if (error instanceof AiRequestLimitExceededError) {
+      if (error instanceof AiGenerationRequestLimitExceededError) {
         return {
           statusCode: 429,
-          body: error.message,
+          body: {
+            error: error.name,
+            message: error.message,
+          },
         };
       }
 
@@ -65,7 +80,11 @@ export class GenerateDietController implements IGenerateDietController {
           console.error(error.issues);
           return {
             statusCode: 502,
-            body: "A inteligência artificial gerou uma resposta fora do padrão esperado. Por favor, tente novamente.",
+            body: {
+              error: "AI_RESPONSE_VALIDATION_ERROR",
+              message:
+                "The AI response did not match the expected format. Please try again.",
+            },
           };
         }
 
@@ -83,7 +102,10 @@ export class GenerateDietController implements IGenerateDietController {
       console.error("❌ Erro interno no servidor:", error);
       return {
         statusCode: 500,
-        body: "An error occurred while generating the diet plan.",
+        body: {
+          error: "INTERNAL_SERVER_ERROR",
+          message: "Internal server error",
+        },
       };
     }
   }
