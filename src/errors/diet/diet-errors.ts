@@ -1,6 +1,6 @@
 export class DietNotFoundError extends Error {
   constructor() {
     super("Diet plan not found");
-    this.name = "DietNotFoundError";
+    this.name = "DIET_NOT_FOUND_ERROR";
   }
 }

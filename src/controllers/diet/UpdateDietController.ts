@@ -1,4 +1,4 @@
-import { AiRequestLimitExceededError } from "../../errors/ai/ai.errors";
+import { AiUpdateRequestLimitExceededError } from "../../errors/ai/ai.errors";
 import { DietNotFoundError } from "../../errors/diet/diet-errors";
 import { ForbiddenError } from "../../errors/users/user.errors";
 import {
@@ -19,20 +19,30 @@ export class UpdateDietController implements IUpdateDietPlanController {
   async updateDiet(
     httpRequest: HttpRequest<UpdateDietParams, { id: number }>,
   ): Promise<
-    HttpResponse<UpdateDietUseCaseResponse | ValidationError[] | string>
+    HttpResponse<
+      | UpdateDietUseCaseResponse
+      | ValidationError[]
+      | { error: string; message: string }
+    >
   > {
     try {
       if (!httpRequest.body) {
         return {
           statusCode: 400,
-          body: "Missing request body.",
+          body: {
+            error: "MISSING_REQUEST_BODY_ERROR",
+            message: "Request body is required.",
+          },
         };
       }
 
       if (!httpRequest.params) {
         return {
           statusCode: 400,
-          body: "Missing request parameters.",
+          body: {
+            error: "MISSING_REQUEST_PARAMS_ERROR",
+            message: "Request params are required.",
+          },
         };
       }
 
@@ -42,7 +52,10 @@ export class UpdateDietController implements IUpdateDietPlanController {
       if (!userId) {
         return {
           statusCode: 401,
-          body: "Unauthorized",
+          body: {
+            error: "UNAUTHORIZED_ERROR",
+            message: "Unauthorized",
+          },
         };
       }
 
@@ -51,7 +64,10 @@ export class UpdateDietController implements IUpdateDietPlanController {
       if (!userRequest) {
         return {
           statusCode: 400,
-          body: "Missing request body.",
+          body: {
+            error: "MISSING_USER_REQUEST_ERROR",
+            message: "User request is required.",
+          },
         };
       }
 
@@ -82,7 +98,11 @@ export class UpdateDietController implements IUpdateDietPlanController {
         if (isAIValidationError) {
           return {
             statusCode: 502,
-            body: "A inteligência artificial gerou uma resposta de atualização fora do padrão esperado. Por favor, tente novamente.",
+            body: {
+              error: "AI_RESPONSE_VALIDATION_ERROR",
+              message:
+                "The response from the AI did not match the expected format.",
+            },
           };
         }
 
@@ -100,28 +120,40 @@ export class UpdateDietController implements IUpdateDietPlanController {
       if (error instanceof ForbiddenError) {
         return {
           statusCode: 403,
-          body: "You do not have permission to update this diet plan.",
+          body: {
+            error: error.name,
+            message: error.message,
+          },
         };
       }
 
       if (error instanceof DietNotFoundError) {
         return {
           statusCode: 404,
-          body: "Diet plan not found.",
+          body: {
+            error: error.name,
+            message: error.message,
+          },
         };
       }
 
-      if (error instanceof AiRequestLimitExceededError) {
+      if (error instanceof AiUpdateRequestLimitExceededError) {
         return {
           statusCode: 429,
-          body: "AI request limit exceeded. Please try again later.",
+          body: {
+            error: error.name,
+            message: error.message,
+          },
         };
       }
 
       console.error("❌ Erro interno no servidor durante o update:", error);
       return {
         statusCode: 500,
-        body: "An error occurred while updating the diet plan.",
+        body: {
+          error: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred while updating the diet plan.",
+        },
       };
     }
   }

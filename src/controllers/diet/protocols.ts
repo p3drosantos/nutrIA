@@ -109,6 +109,10 @@ export interface IUpdateDietPlanController {
   updateDiet(
     httpRequest: HttpRequest<UpdateDietParams>,
   ): Promise<
-    HttpResponse<UpdateDietUseCaseResponse | ValidationError[] | string>
+    HttpResponse<
+      | UpdateDietUseCaseResponse
+      | ValidationError[]
+      | { error: string; message: string }
+    >
   >;
 }
