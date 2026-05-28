@@ -16,10 +16,17 @@ import { DeleteDietRepository } from "../repositories/diet/DeleteDietRepository"
 import { UpdateDietUseCase } from "../use-cases/diet/UpdateDietUseCase";
 import { UpdateDietRepository } from "../repositories/diet/UpdateDietRepository";
 import { UpdateDietController } from "../controllers/diet/UpdateDietController";
-import { aiRateLimiter } from "../middlewares/limiter-middleware";
+import { createRateLimiter } from "../middlewares/limiter-middleware";
 import { AiRequestLogRepository } from "../repositories/ai-request-log/AiRequestLogRepository";
 
 const router = Router();
+
+const aiRateLimiter = createRateLimiter({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  message:
+    "You have exceeded the maximum number of requests. Please try again later.",
+});
 
 router.post("/generate", authMiddleware, aiRateLimiter, async (req, res) => {
   try {

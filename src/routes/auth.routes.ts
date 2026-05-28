@@ -5,10 +5,18 @@ import { GetUserByEmailRepository } from "../repositories/user/GetUserByEmailRep
 import { RefreshTokenUseCase } from "../use-cases/auth/RefreshTokenUseCase";
 import { RefreshTokenController } from "../controllers/auth/RefreshTokenController";
 import { GetUserByIdRepository } from "../repositories/user/GetUserByIdRepository";
+import { createRateLimiter } from "../middlewares/limiter-middleware";
 
 const router = Router();
 
-router.post("/login", async (req, res) => {
+const loginRateLimiter = createRateLimiter({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  message:
+    "You have exceeded the maximum number of requests. Please try again later.",
+});
+
+router.post("/login", loginRateLimiter, async (req, res) => {
   try {
     const getUserByEmailRepository = new GetUserByEmailRepository();
     const loginUseCase = new LoginUseCase(getUserByEmailRepository);

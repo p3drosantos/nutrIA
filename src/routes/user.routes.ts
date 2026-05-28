@@ -8,9 +8,16 @@ import { GetUserByIdRepository } from "../repositories/user/GetUserByIdRepositor
 import { GetUserByIdUseCase } from "../use-cases/user/GetUserByIdUseCase";
 import { GetUserByIdController } from "../controllers/user/GetUserByIdController";
 import { authMiddleware } from "../middlewares/auth-middleware";
+import { createRateLimiter } from "../middlewares/limiter-middleware";
 
 const router = Router();
 
+const registerRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  message:
+    "You have exceeded the maximum number of requests. Please try again later.",
+});
 router.get("/", async (req, res) => {
   const users = await prisma.user.findMany();
   return res.json(users);
@@ -31,7 +38,7 @@ router.get("/me", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", registerRateLimit, async (req, res) => {
   try {
     const createUserRepository = new CreateUserRepository();
     const getUserByEmailRepository = new GetUserByEmailRepository();
