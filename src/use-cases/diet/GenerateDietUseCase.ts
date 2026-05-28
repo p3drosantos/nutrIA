@@ -28,7 +28,7 @@ export class GenerateDietUseCase implements IGenerateDietUseCase {
 
     const aiRequestCount = await this.aiRequestLog.countAIRequests(userId);
 
-    if (aiRequestCount >= 0) {
+    if (aiRequestCount >= 7) {
       throw new AiGenerationRequestLimitExceededError();
     }
 
