@@ -11,7 +11,7 @@ export class GetAllDietsPlansRepository implements IGetAllDietsPlansRepository {
       },
     });
 
-    return dietPlans.map((dietPlan) => ({
+    return dietPlans.map((dietPlan: any) => ({
       id: dietPlan.id,
       goal: dietPlan.goal,
       dietPlan: dietPlan.dietPlan as DietPlan,
