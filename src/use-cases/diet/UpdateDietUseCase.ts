@@ -6,7 +6,10 @@ import {
   UpdateDietPlanUseCaseInput,
   UpdateDietUseCaseResponse,
 } from "../../controllers/diet/protocols";
-import { AiUpdateRequestLimitExceededError } from "../../errors/ai/ai.errors";
+import {
+  AIUnavailableError,
+  AiUpdateRequestLimitExceededError,
+} from "../../errors/ai/ai.errors";
 import { DietNotFoundError } from "../../errors/diet/diet-errors";
 import { ForbiddenError } from "../../errors/users/user.errors";
 import { IAIProvider } from "../../interfaces/ai-provider";
@@ -48,9 +51,10 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
 
     const prompt = updateDietPrompt(existingDiet.dietPlan, userRequest);
 
-    const aiResponse = await this.aiProvider.generate<UpdateDietResponse>(
-      prompt,
-      {
+    let aiResponse;
+
+    try {
+      aiResponse = await this.aiProvider.generate<UpdateDietResponse>(prompt, {
         type: "OBJECT",
         properties: {
           wasAltered: {
@@ -139,8 +143,23 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
           },
         },
         required: ["wasAltered", "systemNotes", "dietUpdated"],
-      },
-    );
+      });
+    } catch (error: any) {
+      const isOverload =
+        error?.status === 503 ||
+        error?.code === 503 ||
+        error?.message?.includes("high demand") ||
+        error?.message?.includes("UNAVAILABLE");
+
+      if (isOverload) {
+        throw new AIUnavailableError();
+      }
+
+      throw error;
+    }
+    if (!aiResponse) {
+      throw new Error("AI_UNAVAILABLE");
+    }
 
     const validatedDietPlan = updateDietResponseSchema.parse(aiResponse);
 

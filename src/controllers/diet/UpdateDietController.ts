@@ -1,4 +1,7 @@
-import { AiUpdateRequestLimitExceededError } from "../../errors/ai/ai.errors";
+import {
+  AIUnavailableError,
+  AiUpdateRequestLimitExceededError,
+} from "../../errors/ai/ai.errors";
 import { DietNotFoundError } from "../../errors/diet/diet-errors";
 import { ForbiddenError } from "../../errors/users/user.errors";
 import {
@@ -140,6 +143,16 @@ export class UpdateDietController implements IUpdateDietPlanController {
       if (error instanceof AiUpdateRequestLimitExceededError) {
         return {
           statusCode: 429,
+          body: {
+            error: error.name,
+            message: error.message,
+          },
+        };
+      }
+
+      if (error instanceof AIUnavailableError) {
+        return {
+          statusCode: 503,
           body: {
             error: error.name,
             message: error.message,
