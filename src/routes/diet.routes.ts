@@ -90,7 +90,7 @@ router.post("/generate", authMiddleware, aiRateLimiter, async (req, res) => {
  * @swagger
  * /diet/my-plans:
  *   get:
- *     summary: Retrieves all diet plans for the authenticated user
+ *     summary: Retorna todos os planos de dieta do usuário autenticado
  *     tags:
  *       - Diets
  *     security:
@@ -131,7 +131,7 @@ router.get("/my-plans", authMiddleware, async (req, res) => {
  * @swagger
  * /diet/{id}:
  *   get:
- *     summary: Retrieves a specific diet plan by ID
+ *     summary: Retorna um plano de dieta pelo ID
  *     tags:
  *       - Diets
  *     security:
@@ -179,7 +179,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
  * @swagger
  * /diet/{id}:
  *   delete:
- *     summary: Deletes a specific diet plan by ID
+ *     summary: Exclui um plano de dieta pelo ID
  *     tags:
  *       - Diets
  *     security:
@@ -223,7 +223,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
  * @swagger
  * /diet/{id}:
  *   patch:
- *     summary: Updates a specific diet plan by ID
+ *     summary: Atualiza um plano de dieta pelo ID
  *     tags:
  *       - Diets
  *     security:
