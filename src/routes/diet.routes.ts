@@ -28,6 +28,39 @@ const aiRateLimiter = createRateLimiter({
     "You have exceeded the maximum number of requests. Please try again later.",
 });
 
+/**
+ * @swagger
+ * /diet/generate:
+ *   post:
+ *     summary: Gera um novo plano de dieta
+ *     tags:
+ *       - Diets
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/GenerateDietRequest'
+ *     responses:
+ *       200:
+ *         description: Diet plan generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GenerateDietResponse'
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized
+ *       429:
+ *         description: Too many requests
+ *       502:
+ *         description: Bad Gateway
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/generate", authMiddleware, aiRateLimiter, async (req, res) => {
   try {
     const iaProvider = new GeminiAdapter();
@@ -53,6 +86,29 @@ router.post("/generate", authMiddleware, aiRateLimiter, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /diet/my-plans:
+ *   get:
+ *     summary: Retrieves all diet plans for the authenticated user
+ *     tags:
+ *       - Diets
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of diet plans
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DietPlanEntity'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/my-plans", authMiddleware, async (req, res) => {
   try {
     const getAllDietsPlansRepository = new GetAllDietsPlansRepository();
@@ -71,6 +127,35 @@ router.get("/my-plans", authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /diet/{id}:
+ *   get:
+ *     summary: Retrieves a specific diet plan by ID
+ *     tags:
+ *       - Diets
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Diet plan found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DietPlanEntity'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Diet plan not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
@@ -90,6 +175,31 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /diet/{id}:
+ *   delete:
+ *     summary: Deletes a specific diet plan by ID
+ *     tags:
+ *       - Diets
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Diet plan deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Diet plan not found
+ *       500:
+ *         description: Internal server error
+ */
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
@@ -109,6 +219,50 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /diet/{id}:
+ *   patch:
+ *     summary: Updates a specific diet plan by ID
+ *     tags:
+ *       - Diets
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userRequest
+ *             properties:
+ *               userRequest:
+ *                 type: string
+ *                 description: User's request to update the diet plan
+ *                 example: "Change the fruit I have for my Monday breakfast. I want to have a banana instead of an apple."
+ *     responses:
+ *       200:
+ *         description: Diet plan updated successfully
+ *         content:
+ *           application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/UpdateDietResponse'
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Diet plan not found
+ *       500:
+ *         description: Internal server error
+ */
 router.patch("/:id", authMiddleware, aiRateLimiter, async (req, res) => {
   try {
     const { id } = req.params;
@@ -133,7 +287,7 @@ router.patch("/:id", authMiddleware, aiRateLimiter, async (req, res) => {
     res.status(response.statusCode).json(response.body);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to delete diet plan" });
+    res.status(500).json({ error: "Failed to update diet plan" });
   }
 });
 
