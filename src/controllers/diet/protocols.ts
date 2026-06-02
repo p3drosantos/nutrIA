@@ -58,8 +58,12 @@ export interface IGetDietPlanRepository {
 
 export interface IGetAllDietsPlansController {
   getAllDietPlans(
-    httpRequest: HttpRequest<unknown, unknown>,
-  ): Promise<HttpResponse<DietPlanEntity[] | ValidationError[] | string>>;
+    httpRequest: HttpRequest,
+  ): Promise<
+    HttpResponse<
+      DietPlanEntity[] | ValidationError[] | { error: string; message: string }
+    >
+  >;
 }
 
 export interface IGetAllDietsPlansUseCase {
