@@ -11,7 +11,7 @@ export const swaggerSpec = swaggerJsdoc({
 
     servers: [
       {
-        url: "http://localhost:3333",
+        url: "https://nutria-sgcd.onrender.com",
       },
     ],
 
