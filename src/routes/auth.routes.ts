@@ -16,6 +16,42 @@ const loginRateLimiter = createRateLimiter({
     "You have exceeded the maximum number of requests. Please try again later.",
 });
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Realiza login do usuário
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email do usuário
+ *                 example: Jhon@example.com
+ *               password:
+ *                 type: string
+ *                 description: Senha do usuário
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *       401:
+ *         description: Unauthorized
+ *       400:
+ *         description: Invalid input data
+ *       429:
+ *         description: Too many requests
+ */
 router.post("/login", loginRateLimiter, async (req, res) => {
   try {
     const getUserByEmailRepository = new GetUserByEmailRepository();
@@ -30,6 +66,39 @@ router.post("/login", loginRateLimiter, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Atualiza o token de acesso usando o token de refresh
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: Token de refresh
+ *                 example: refresh.token.exemplo
+ *     responses:
+ *       200:
+ *         description: Successful token refresh
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                accessToken:
+ *                  type: string
+ *       400:
+ *         description: Invalid input data
+ */
 router.post("/refresh", async (req, res) => {
   try {
     const getUserByIdRepository = new GetUserByIdRepository(); // Assuming this repository can also get user by ID
