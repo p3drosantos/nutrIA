@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { prisma } from "../lib/prisma";
 import { CreateUserRepository } from "../repositories/user/CreateUserRepository";
 import { CreateUserUseCase } from "../use-cases/user/CreateUserUseCase";
 import { GetUserByEmailRepository } from "../repositories/user/GetUserByEmailRepository";
@@ -18,11 +17,28 @@ const registerRateLimit = createRateLimiter({
   message:
     "You have exceeded the maximum number of requests. Please try again later.",
 });
-router.get("/", async (req, res) => {
-  const users = await prisma.user.findMany();
-  return res.json(users);
-});
 
+/**
+ * @swagger
+ * /users/me:
+ *   get:
+ *     summary: Retorna dados do usuário autenticado
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/me", authMiddleware, async (req, res) => {
   try {
     const getUserByIdRepository = new GetUserByIdRepository();
@@ -38,6 +54,33 @@ router.get("/me", authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /users/register:
+ *   post:
+ *     summary: Cria um novo usuário
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterUserRequest'
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid input data
+ *       409:
+ *         description: User already exists
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/register", registerRateLimit, async (req, res) => {
   try {
     const createUserRepository = new CreateUserRepository();
