@@ -34,7 +34,7 @@ export class UpdateDietUseCase implements IUpdateDietPlanUseCase {
 
     const aiRequestCount = await this.aiRequestLog.countAIRequests(userId);
 
-    if (aiRequestCount >= 7) {
+    if (aiRequestCount >= 10) {
       throw new AiUpdateRequestLimitExceededError();
     }
 

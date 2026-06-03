@@ -11,7 +11,7 @@ const router = Router();
 
 const loginRateLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 15,
+  max: 8,
   message:
     "You have exceeded the maximum number of requests. Please try again later.",
 });

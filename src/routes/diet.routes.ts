@@ -23,7 +23,7 @@ const router = Router();
 
 const aiRateLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5,
+  max: 8,
   message:
     "You have exceeded the maximum number of requests. Please try again later.",
 });
