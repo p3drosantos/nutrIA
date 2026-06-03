@@ -120,7 +120,7 @@ router.get("/my-plans", authMiddleware, async (req, res) => {
     const response = await getAllDietsController.getAllDietPlans({
       userId: req.userId,
     });
-    res.status(200).json(response);
+    res.status(200).json(response.body);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to retrieve diet plans" });
